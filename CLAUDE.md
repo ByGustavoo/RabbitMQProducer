@@ -4,7 +4,9 @@
 
 Produtor de mensagens de estudo em Spring Boot: o `POST /v1/pedidos` dispara o evento
 `PedidoCriadoEvent`, e o `PedidoProducer` o publica como JSON na exchange `pedidos.exchange`,
-que entrega na fila `pedidos.criados`. Não tem banco nem consumidor.
+que entrega na fila `pedidos.criados`. Não tem banco. Quem consome a fila é o projeto irmão
+`RabbitMQConsumer` (`../RabbitMQConsumer`): o `PedidoCriadoEvent` e os nomes em `rabbitmq.pedidos.*`
+precisam ficar iguais nos dois, e a fila é declarada com os mesmos argumentos dos dois lados.
 
 ## Tipo
 

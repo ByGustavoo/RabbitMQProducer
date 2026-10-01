@@ -5,7 +5,7 @@
 <br>
 
 <div align="center">
-  Produtor de mensagens em Spring Boot com RabbitMQ. Quando um pedido é registrado, a aplicação dispara o evento PedidoCriado, publica esse evento como JSON em uma exchange e o RabbitMQ entrega a mensagem na fila de pedidos, com logs em cada etapa do envio.
+  Produtor de mensagens em Spring Boot com RabbitMQ. Quando um pedido é registrado, a aplicação dispara o evento PedidoCriado, publica esse evento como JSON em uma exchange e o RabbitMQ entrega a mensagem na fila de pedidos, consumida pelo <a href="https://github.com/ByGustavoo/RabbitMQConsumer">RabbitMQConsumer</a>, com logs em cada etapa do envio.
 </div>
 
 <br> <br>
