@@ -1,0 +1,68 @@
+logging:
+  config: classpath:log4j2.xml
+
+server:
+  servlet:
+    context-path: /RabbitMQProducer
+
+spring:
+  application:
+    name: rabbitmqproducer
+
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:rabbitmq}
+    password: ${RABBITMQ_PASSWORD:rabbitmq}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+
+  web:
+    error:
+      include-stacktrace: never
+
+rabbitmq:
+  pedidos:
+    fila: pedidos.criados
+    exchange: pedidos.exchange
+    routing-key: pedido.criado
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+server:
+  port: 9019
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+server:
+  port: 9029
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+rabbitmq:
+  pedidos:
+    fila: pedidos.criados.test
+    exchange: pedidos.exchange.test
+    routing-key: pedido.criado.test
