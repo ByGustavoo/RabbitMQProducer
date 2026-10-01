@@ -40,6 +40,8 @@ no formato `<n> - <descrição>`.
 
 - Segue a skill `java-clean-architecture`: sem comentários, campos do menor para o maior, mensagens
   terminando em `!`, imports no padrão do IntelliJ como no OrbitAPI.
+- A exceção são os rótulos `// Nome` dos grupos de dependências do `build.gradle.kts` (Spring Boot,
+  RabbitMQ, MapStruct, Lombok, Logging, Swagger e Testes), cada grupo da linha mais curta para a mais longa.
 - O service não conhece o RabbitMQ: ele publica um evento do Spring e o produtor decide para onde vai.
   Um evento novo segue o mesmo caminho: record em `model/event`, propriedades em `rabbitmq.<nome>`,
   fila/exchange/binding no `RabbitMQConfig` e um produtor em `producer/`.
