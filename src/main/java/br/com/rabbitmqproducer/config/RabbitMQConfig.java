@@ -20,7 +20,10 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue filaPedidos(FilaPedidosProperties filaPedidosProperties) {
-        return QueueBuilder.durable(filaPedidosProperties.fila()).build();
+        return QueueBuilder.durable(filaPedidosProperties.fila())
+                .deadLetterExchange(filaPedidosProperties.exchangeDlq())
+                .deadLetterRoutingKey(filaPedidosProperties.filaDlq())
+                .build();
     }
 
     @Bean
@@ -33,6 +36,23 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(filaPedidos)
                 .to(exchangePedidos)
                 .with(filaPedidosProperties.routingKey());
+    }
+
+    @Bean
+    public Queue filaPedidosDlq(FilaPedidosProperties filaPedidosProperties) {
+        return QueueBuilder.durable(filaPedidosProperties.filaDlq()).build();
+    }
+
+    @Bean
+    public DirectExchange exchangePedidosDlq(FilaPedidosProperties filaPedidosProperties) {
+        return new DirectExchange(filaPedidosProperties.exchangeDlq());
+    }
+
+    @Bean
+    public Binding bindingPedidosDlq(Queue filaPedidosDlq, DirectExchange exchangePedidosDlq, FilaPedidosProperties filaPedidosProperties) {
+        return BindingBuilder.bind(filaPedidosDlq)
+                .to(exchangePedidosDlq)
+                .with(filaPedidosProperties.filaDlq());
     }
 
     @Bean

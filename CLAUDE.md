@@ -20,7 +20,7 @@ no formato `<n> - <descrição>`.
 
 ## Estrutura
 
-- `config/` — `RabbitMQConfig` (fila, exchange, binding, conversor JSON, callbacks de confirmação e devolução) e `FilaPedidosProperties` (`rabbitmq.pedidos.*`)
+- `config/` — `RabbitMQConfig` (fila, exchange, binding, DLQ `pedidos.criados.dlq` na exchange `pedidos.dlx`, conversor JSON, callbacks de confirmação e devolução) e `FilaPedidosProperties` (`rabbitmq.pedidos.*`)
 - `controller/pedido/` — `PedidoController` + `PedidoDocs`
 - `service/pedido/` — `PedidoService`, que monta o evento e o publica com o `ApplicationEventPublisher`
 - `producer/` — `PedidoProducer`, o `@EventListener` que envia pelo `RabbitTemplate`
@@ -50,6 +50,8 @@ no formato `<n> - <descrição>`.
 
 ## Pegadinhas
 
+- Mudar os argumentos da fila (como os de dead letter) exige apagar a fila existente no RabbitMQ
+  uma vez: redeclarar com argumentos diferentes dá `PRECONDITION_FAILED` e a declaração falha.
 - Sem o RabbitMQ no ar a aplicação sobe normalmente (a conexão é preguiçosa), mas o `POST` responde 503
   e os testes falham.
 - A confirmação do RabbitMQ chega de forma assíncrona, numa thread `rabbitConnectionFactory*`: uma

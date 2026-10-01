@@ -49,6 +49,8 @@ POST /v1/pedidos ──► PedidoService ──► evento PedidoCriado ──►
 
 * **Topologia:** o `RabbitMQConfig` declara a fila durável `pedidos.criados`, a `DirectExchange` `pedidos.exchange` e o binding entre elas. O Spring cria tudo no RabbitMQ na primeira conexão e recria após uma reconexão.
 
+* **Dead letter queue:** a fila principal é declarada com `x-dead-letter-exchange` apontando para a `DirectExchange` `pedidos.dlx`, ligada à fila `pedidos.criados.dlq`. Uma mensagem rejeitada pelo consumidor sai da fila principal e cai na DLQ, com o cabeçalho `x-death` dizendo de onde veio e por quê.
+
 * **Formato:** as mensagens viajam como JSON (`JacksonJsonMessageConverter`), com o cabeçalho `__TypeId__` apontando para a classe do evento.
 
 * **Confirmação:** com `publisher-confirm-type: correlated` e `publisher-returns: true`, o RabbitMQ avisa se aceitou a mensagem e devolve a que não encontrou fila. Os dois retornos viram log.
@@ -131,6 +133,8 @@ curl -X POST http://localhost:9019/RabbitMQProducer/v1/pedidos \
   -d '{"cliente":"Maria Souza","email":"maria.souza@email.com","valor":249.90}'
 ```
 
+Se a fila `pedidos.criados` já existir no seu RabbitMQ sem a DLQ, apague-a uma vez (painel › **Queues and Streams** › `pedidos.criados` › **Delete**) antes de subir a aplicação: o RabbitMQ recusa redeclarar uma fila com argumentos diferentes (`PRECONDITION_FAILED`).
+
 A documentação fica em `http://localhost:9019/RabbitMQProducer/swagger-ui.html`. As mensagens podem
 ser vistas no painel do RabbitMQ, em `http://localhost:15672` (usuário e senha `rabbitmq`), na aba
 **Queues and Streams** › `pedidos.criados` › **Get messages**.
@@ -148,7 +152,7 @@ ser vistas no painel do RabbitMQ, em `http://localhost:15672` (usuário e senha 
 ## 🧪 Testes e Build
 
 Os testes sobem o contexto completo e usam o RabbitMQ real, então o `docker-compose-rabbitmq.yml`
-precisa estar no ar. O perfil `test` usa fila, exchange e routing key próprias (`pedidos.criados.test`)
+precisa estar no ar. O perfil `test` usa fila, DLQ, exchanges e routing key próprias (`pedidos.criados.test`)
 para não misturar com as mensagens de desenvolvimento.
 
 ```bash
@@ -168,7 +172,7 @@ O `PedidoProducerTest` envia um evento, lê a mensagem de volta da fila e confer
 ```
 src/main/java/br/com/rabbitmqproducer
 ├── RabbitMQProducerApplication.java   # Classe de inicialização
-├── config                             # RabbitMQConfig (fila, exchange, binding, JSON e callbacks) e FilaPedidosProperties
+├── config                             # RabbitMQConfig (fila, exchange, binding, DLQ, JSON e callbacks) e FilaPedidosProperties
 ├── controller/pedido                  # PedidoController e PedidoDocs (Swagger)
 ├── exceptions                         # ErrorResponseDTO e GlobalExceptionHandler
 ├── model

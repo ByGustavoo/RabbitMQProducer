@@ -6,7 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record FilaPedidosProperties(
 
         String fila,
+        String filaDlq,
         String exchange,
-        String routingKey
+        String routingKey,
+        String exchangeDlq
 
 ) {}

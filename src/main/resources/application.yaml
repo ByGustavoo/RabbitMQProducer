@@ -31,8 +31,10 @@ spring:
 rabbitmq:
   pedidos:
     fila: pedidos.criados
+    fila-dlq: pedidos.criados.dlq
     exchange: pedidos.exchange
     routing-key: pedido.criado
+    exchange-dlq: pedidos.dlx
 
 ---
 
@@ -64,5 +66,7 @@ spring:
 rabbitmq:
   pedidos:
     fila: pedidos.criados.test
+    fila-dlq: pedidos.criados.test.dlq
     exchange: pedidos.exchange.test
     routing-key: pedido.criado.test
+    exchange-dlq: pedidos.dlx.test
